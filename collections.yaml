@@ -1,0 +1,5 @@
+collections:
+  assistant-project:
+    description: "The Personal AI Assistant repository code and documentation."
+    embedding_model: "BAAI/bge-small-en-v1.5"
+    embedding_dim: 384
