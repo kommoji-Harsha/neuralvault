@@ -87,6 +87,25 @@ def build_parser() -> argparse.ArgumentParser:
         help="List available document collections.",
     )
 
+    # MCP command
+    mcp_parser = subparsers.add_parser(
+        "mcp",
+        help="Start NeuralVault Model Context Protocol (MCP) server.",
+    )
+    mcp_parser.add_argument(
+        "--transport",
+        type=str,
+        default="stdio",
+        choices=["stdio", "http"],
+        help="MCP transport mode (stdio or http).",
+    )
+    mcp_parser.add_argument(
+        "--port",
+        type=int,
+        default=8042,
+        help="HTTP port for MCP server (default: 8042).",
+    )
+
     # Doctor command
     subparsers.add_parser(
         "doctor",
@@ -272,6 +291,14 @@ def main() -> None:
                 f"- {c.name}: {c.description or 'No description'} "
                 f"({c.document_count} docs, {c.chunk_count} chunks, model: {c.embedding_model})"
             )
+
+    elif args.command == "mcp":
+        from neuralvault.mcp_server.server import run_http_server, run_stdio_server
+
+        if args.transport == "stdio":
+            run_stdio_server()
+        else:
+            run_http_server(port=args.port)
 
     elif args.command == "doctor":
         run_doctor()
