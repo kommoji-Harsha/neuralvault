@@ -12,7 +12,9 @@ from neuralvault.config import (
     guard_offline,
     is_offline,
 )
+from neuralvault.contract import AskRequest, SearchRequest
 from neuralvault.ingest.engine import IngestEngine
+from neuralvault.service.service import RagService
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -45,6 +47,44 @@ def build_parser() -> argparse.ArgumentParser:
         type=str,
         default=None,
         help="Custom indexes directory.",
+    )
+
+    # Search command
+    search_parser = subparsers.add_parser(
+        "search",
+        help="Search a collection for relevant passages.",
+    )
+    search_parser.add_argument("collection", type=str, help="Collection name.")
+    search_parser.add_argument("query", type=str, help="Search query text.")
+    search_parser.add_argument("--top-k", "-k", type=int, default=3, help="Number of results.")
+    search_parser.add_argument(
+        "--profile",
+        type=str,
+        default="balanced",
+        choices=["fast", "balanced", "best"],
+        help="Retrieval profile.",
+    )
+
+    # Ask command
+    ask_parser = subparsers.add_parser(
+        "ask",
+        help="Ask a question over a collection.",
+    )
+    ask_parser.add_argument("collection", type=str, help="Collection name.")
+    ask_parser.add_argument("query", type=str, help="Question text.")
+    ask_parser.add_argument("--top-k", "-k", type=int, default=3, help="Context chunk count.")
+    ask_parser.add_argument(
+        "--profile",
+        type=str,
+        default="balanced",
+        choices=["fast", "balanced", "best"],
+        help="Retrieval profile.",
+    )
+
+    # Collections command
+    subparsers.add_parser(
+        "collections",
+        help="List available document collections.",
     )
 
     # Doctor command
@@ -153,7 +193,6 @@ def download_model(model_name: str) -> None:
 
     from fastembed import TextEmbedding
 
-    # Initializing downloads the model files into cache_dir
     TextEmbedding(model_name=model_name, cache_dir=str(cache_dir))
     print(f"Model '{model_name}' downloaded successfully to {cache_dir}.")
 
@@ -184,6 +223,55 @@ def main() -> None:
             f"  Total Docs: {stats['total_documents']}\n"
             f"  Total Chunks: {stats['total_chunks']}"
         )
+
+    elif args.command == "search":
+        service = RagService()
+        req = SearchRequest(
+            query=args.query,
+            collection=args.collection,
+            top_k=args.top_k,
+            profile=args.profile,
+        )
+        res = service.search(req)
+
+        print(f"Search results for '{args.query}' in collection '{args.collection}':")
+        if res.note:
+            print(f"Note: {res.note}")
+
+        for i, chunk in enumerate(res.results, 1):
+            print(
+                f"\n[{i}] ID: {chunk.chunk_id} | Score: {chunk.score:.4f}\n"
+                f"    Source: {chunk.source}\n"
+                f"    Location: {chunk.location}\n"
+                f"    Text: {chunk.text.strip()}"
+            )
+        print(f"\nLatency: {res.latency_ms:.2f} ms")
+
+    elif args.command == "ask":
+        service = RagService()
+        req = AskRequest(
+            query=args.query,
+            collection=args.collection,
+            top_k=args.top_k,
+            profile=args.profile,
+        )
+        res = service.ask(req)
+
+        print(f"Q&A Answer for '{args.query}':")
+        if res.note:
+            print(f"Note: {res.note}")
+        print(f"\n{res.answer}\n")
+        print(f"Citations count: {len(res.citations)}")
+
+    elif args.command == "collections":
+        service = RagService()
+        cols = service.list_collections()
+        print("Available Collections:")
+        for c in cols:
+            print(
+                f"- {c.name}: {c.description or 'No description'} "
+                f"({c.document_count} docs, {c.chunk_count} chunks, model: {c.embedding_model})"
+            )
 
     elif args.command == "doctor":
         run_doctor()
