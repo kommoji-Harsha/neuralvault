@@ -46,7 +46,7 @@ class FixedSizeChunker(Chunker):
                         location=location,
                         score=0.0,
                         embedding_text=embedding_text,
-                        metadata={"type": "fixed_size", "chunk_index": idx},
+                        metadata={"doc_id": doc.doc_id, "type": "fixed_size", "chunk_index": idx},
                     )
                 )
                 idx += 1
@@ -126,7 +126,11 @@ class MarkdownChunker(Chunker):
                         location=location,
                         score=0.0,
                         embedding_text=embedding_text,
-                        metadata={"type": "markdown", "heading_path": path},
+                        metadata={
+                            "doc_id": doc.doc_id,
+                            "type": "markdown",
+                            "heading_path": path,
+                        },
                     )
                 )
                 idx += 1
@@ -196,7 +200,7 @@ class PythonAstChunker(Chunker):
                     location=qual_name,
                     score=0.0,
                     embedding_text=emb_text,
-                    metadata={"type": "python_module_docstring"},
+                    metadata={"doc_id": doc.doc_id, "type": "python_module_docstring"},
                 )
             )
             idx += 1
@@ -245,7 +249,11 @@ class PythonAstChunker(Chunker):
                     location=qual_name,
                     score=0.0,
                     embedding_text=emb_text,
-                    metadata={"type": "python_function", "qualified_name": qual_name},
+                    metadata={
+                        "doc_id": doc.doc_id,
+                        "type": "python_function",
+                        "qualified_name": qual_name,
+                    },
                 )
             ]
 
@@ -270,7 +278,7 @@ class PythonAstChunker(Chunker):
                         location=loc,
                         score=0.0,
                         embedding_text=emb,
-                        metadata={"type": "python_function_statement_split"},
+                        metadata={"doc_id": doc.doc_id, "type": "python_function_statement_split"},
                     )
                 )
                 part += 1
@@ -292,7 +300,7 @@ class PythonAstChunker(Chunker):
                     location=loc,
                     score=0.0,
                     embedding_text=emb,
-                    metadata={"type": "python_function_statement_split"},
+                    metadata={"doc_id": doc.doc_id, "type": "python_function_statement_split"},
                 )
             )
 
@@ -340,7 +348,7 @@ class PythonAstChunker(Chunker):
                 location=qual_name,
                 score=0.0,
                 embedding_text=emb_text,
-                metadata={"type": "python_class"},
+                metadata={"doc_id": doc.doc_id, "type": "python_class"},
             )
         )
 
@@ -435,7 +443,7 @@ class PdfDocxChunker(Chunker):
             location=loc,
             score=0.0,
             embedding_text=emb,
-            metadata={"type": f"pdf_docx_{chunk_type}"},
+            metadata={"doc_id": doc.doc_id, "type": f"pdf_docx_{chunk_type}"},
         )
 
 
@@ -463,7 +471,7 @@ class RecursiveGenericChunker(Chunker):
                     location=loc,
                     score=0.0,
                     embedding_text=emb,
-                    metadata={"type": "recursive_generic"},
+                    metadata={"doc_id": doc.doc_id, "type": "recursive_generic"},
                 )
             )
 

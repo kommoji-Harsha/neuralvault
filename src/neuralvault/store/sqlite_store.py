@@ -218,6 +218,7 @@ class SqliteStore:
 
             # Insert chunks and FTS
             for i, chunk in enumerate(chunks):
+                doc_id = chunk.metadata.get("doc_id", "")
                 cur.execute(
                     """
                     INSERT OR REPLACE INTO chunks
@@ -226,7 +227,7 @@ class SqliteStore:
                     """,
                     (
                         chunk.chunk_id,
-                        chunk.metadata.get("doc_id", ""),
+                        doc_id,
                         chunk.source,
                         chunk.location,
                         chunk.text,
@@ -265,23 +266,49 @@ class SqliteStore:
         if not query.strip():
             return []
 
-        # Sanitize query for FTS5
         clean_query = " ".join(query.split())
         with self._get_connection() as conn:
             cur = conn.cursor()
-            cur.execute(
-                """
-                SELECT c.chunk_id, c.source, c.location, c.text, c.embedding_text, c.metadata,
-                       f.rank as bm25_rank
-                FROM chunks_fts f
-                JOIN chunks c ON f.chunk_id = c.chunk_id
-                WHERE chunks_fts MATCH ?
-                ORDER BY rank
-                LIMIT ?
-                """,
-                (clean_query, top_k),
-            )
-            rows = cur.fetchall()
+            try:
+                cur.execute(
+                    """
+                    SELECT c.chunk_id, c.source, c.location, c.text, c.embedding_text, c.metadata,
+                           f.rank as bm25_rank
+                    FROM chunks_fts f
+                    JOIN chunks c ON f.chunk_id = c.chunk_id
+                    WHERE chunks_fts MATCH ?
+                    ORDER BY rank
+                    LIMIT ?
+                    """,
+                    (clean_query, top_k),
+                )
+                rows = cur.fetchall()
+            except sqlite3.OperationalError:
+                # Fallback to sanitized token query if FTS syntax error occurs
+                safe_tokens = []
+                for tok in clean_query.split():
+                    c_tok = tok.replace('"', "")
+                    if c_tok:
+                        safe_tokens.append(f'"{c_tok}"')
+                if not safe_tokens:
+                    return []
+                safe_query = " OR ".join(safe_tokens)
+                try:
+                    cur.execute(
+                        """
+                        SELECT c.chunk_id, c.source, c.location, c.text,
+                               c.embedding_text, c.metadata, f.rank as bm25_rank
+                        FROM chunks_fts f
+                        JOIN chunks c ON f.chunk_id = c.chunk_id
+                        WHERE chunks_fts MATCH ?
+                        ORDER BY rank
+                        LIMIT ?
+                        """,
+                        (safe_query, top_k),
+                    )
+                    rows = cur.fetchall()
+                except sqlite3.OperationalError:
+                    return []
 
             chunks: List[Chunk] = []
             for row in rows:
