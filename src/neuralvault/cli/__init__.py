@@ -152,6 +152,36 @@ def build_parser() -> argparse.ArgumentParser:
         help="List available document collections.",
     )
 
+    # Eval command
+    eval_parser = subparsers.add_parser(
+        "eval",
+        help="Run offline retrieval evaluation harness and generate benchmark reports.",
+    )
+    eval_parser.add_argument(
+        "--collection",
+        type=str,
+        default="assistant-project",
+        help="Collection to evaluate.",
+    )
+    eval_parser.add_argument(
+        "--qa-file",
+        type=str,
+        default="data/qa/handwritten_assistant_project.jsonl",
+        help="QA dataset file path.",
+    )
+    eval_parser.add_argument(
+        "--out-json",
+        type=str,
+        default="results/results.json",
+        help="Output results.json path.",
+    )
+    eval_parser.add_argument(
+        "--out-report",
+        type=str,
+        default="results/report.md",
+        help="Output report.md path.",
+    )
+
     # Tools subparser
     tools_parser = subparsers.add_parser(
         "tools",
@@ -371,6 +401,24 @@ def main() -> None:
                 f"- {c.name}: {c.description or 'No description'} "
                 f"({c.document_count} docs, {c.chunk_count} chunks, model: {c.embedding_model})"
             )
+
+    elif args.command == "eval":
+        from neuralvault.eval.harness import EvaluationHarness
+
+        service = RagService()
+        harness = EvaluationHarness(service)
+        print(
+            f"Running evaluation benchmark on '{args.collection}' with QA file '{args.qa_file}'..."
+        )
+        _, report_md = harness.run_ablation_benchmark(
+            collection=args.collection,
+            qa_file=args.qa_file,
+            out_json=args.out_json,
+            out_report=args.out_report,
+        )
+        print("\nEvaluation Complete:\n")
+        print(report_md)
+        print(f"\nResults saved to '{args.out_json}' and '{args.out_report}'.")
 
     elif args.command == "tools":
         if args.tools_command == "export":

@@ -1,0 +1,51 @@
+{
+  "collection": "assistant-project",
+  "timestamp": "2026-10-09T05:05:47Z",
+  "strategies": [
+    {
+      "strategy": "bm25",
+      "recall_at_5": 0.0,
+      "mrr": 0.0,
+      "ndcg_at_5": 0.0,
+      "latency_p50_ms": 11.285451000276225,
+      "latency_p95_ms": 14.234713500036376,
+      "sample_count": 10
+    },
+    {
+      "strategy": "vector",
+      "recall_at_5": 0.0,
+      "mrr": 0.0,
+      "ndcg_at_5": 0.0,
+      "latency_p50_ms": 3.56964600041465,
+      "latency_p95_ms": 13.97743034999621,
+      "sample_count": 10
+    },
+    {
+      "strategy": "hybrid",
+      "recall_at_5": 0.0,
+      "mrr": 0.0,
+      "ndcg_at_5": 0.0,
+      "latency_p50_ms": 3.4337554998273845,
+      "latency_p95_ms": 10.633758200037846,
+      "sample_count": 10
+    },
+    {
+      "strategy": "hybrid+rerank",
+      "recall_at_5": 0.0,
+      "mrr": 0.0,
+      "ndcg_at_5": 0.0,
+      "latency_p50_ms": 2.8356810003060673,
+      "latency_p95_ms": 13.343125400206187,
+      "sample_count": 10
+    },
+    {
+      "strategy": "full",
+      "recall_at_5": 0.0,
+      "mrr": 0.0,
+      "ndcg_at_5": 0.0,
+      "latency_p50_ms": 2.677149000192003,
+      "latency_p95_ms": 6.010836599580214,
+      "sample_count": 10
+    }
+  ]
+}
