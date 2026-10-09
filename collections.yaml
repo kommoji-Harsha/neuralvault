@@ -1,5 +1,5 @@
 collections:
-  assistant-project:
-    description: "The Personal AI Assistant repository code and documentation."
+  my-project:
+    description: "Any project, codebase or document collection you want to search."
     embedding_model: "BAAI/bge-small-en-v1.5"
     embedding_dim: 384

@@ -22,7 +22,7 @@ def _get_client(collection: Optional[str] = None) -> Any:
     """Lazy initialization of in-process local RagClient."""
     from neuralvault.client.client import RagClient
 
-    col = collection or os.getenv("NEURALVAULT_COLLECTION", "assistant-project")
+    col = collection or os.getenv("NEURALVAULT_COLLECTION", "my-project")
     if col not in _CLIENT_CACHE:
         _CLIENT_CACHE[col] = RagClient(mode="local", collection=col)
     return _CLIENT_CACHE[col]

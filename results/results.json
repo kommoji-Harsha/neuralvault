@@ -1,50 +1,50 @@
 {
-  "collection": "assistant-project",
-  "timestamp": "2026-10-09T05:05:47Z",
+  "collection": "my-project",
+  "timestamp": "2026-10-09T06:05:14Z",
   "strategies": [
     {
       "strategy": "bm25",
-      "recall_at_5": 0.0,
-      "mrr": 0.0,
-      "ndcg_at_5": 0.0,
-      "latency_p50_ms": 11.285451000276225,
-      "latency_p95_ms": 14.234713500036376,
+      "recall_at_5": 0.8,
+      "mrr": 0.5416666666666666,
+      "ndcg_at_5": 1.1049759529180654,
+      "latency_p50_ms": 14.779349500713579,
+      "latency_p95_ms": 23.27995235018533,
       "sample_count": 10
     },
     {
       "strategy": "vector",
-      "recall_at_5": 0.0,
-      "mrr": 0.0,
-      "ndcg_at_5": 0.0,
-      "latency_p50_ms": 3.56964600041465,
-      "latency_p95_ms": 13.97743034999621,
+      "recall_at_5": 0.8,
+      "mrr": 0.5416666666666666,
+      "ndcg_at_5": 1.1049759529180654,
+      "latency_p50_ms": 15.389367498755746,
+      "latency_p95_ms": 17.184922300384642,
       "sample_count": 10
     },
     {
       "strategy": "hybrid",
-      "recall_at_5": 0.0,
-      "mrr": 0.0,
-      "ndcg_at_5": 0.0,
-      "latency_p50_ms": 3.4337554998273845,
-      "latency_p95_ms": 10.633758200037846,
+      "recall_at_5": 0.8,
+      "mrr": 0.5416666666666666,
+      "ndcg_at_5": 1.1049759529180654,
+      "latency_p50_ms": 15.09112050098338,
+      "latency_p95_ms": 17.220100149643258,
       "sample_count": 10
     },
     {
       "strategy": "hybrid+rerank",
-      "recall_at_5": 0.0,
-      "mrr": 0.0,
-      "ndcg_at_5": 0.0,
-      "latency_p50_ms": 2.8356810003060673,
-      "latency_p95_ms": 13.343125400206187,
+      "recall_at_5": 0.8,
+      "mrr": 0.5166666666666666,
+      "ndcg_at_5": 1.0587646826539674,
+      "latency_p50_ms": 87.55226050107012,
+      "latency_p95_ms": 118.43064264967322,
       "sample_count": 10
     },
     {
       "strategy": "full",
-      "recall_at_5": 0.0,
-      "mrr": 0.0,
-      "ndcg_at_5": 0.0,
-      "latency_p50_ms": 2.677149000192003,
-      "latency_p95_ms": 6.010836599580214,
+      "recall_at_5": 0.8,
+      "mrr": 0.5166666666666666,
+      "ndcg_at_5": 1.0587646826539674,
+      "latency_p50_ms": 88.78436750092078,
+      "latency_p95_ms": 118.42222554987526,
       "sample_count": 10
     }
   ]

@@ -21,7 +21,7 @@ class RagClient:
     def __init__(
         self,
         mode: str = "local",
-        collection: str = "assistant-project",
+        collection: str = "my-project",
         base_url: str = "http://localhost:8042",
         api_key: Optional[str] = None,
         index_dir=None,

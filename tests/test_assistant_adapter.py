@@ -1,6 +1,5 @@
 """Unit tests for Personal AI Assistant tool adapter."""
 
-
 from integrations.personal_assistant.knowledge import search_knowledge_base
 from neuralvault.contract import Chunk, Document
 from neuralvault.store.sqlite_store import SqliteStore
@@ -18,13 +17,13 @@ def test_assistant_tool_registration():
 
 
 def test_assistant_tool_execution(tmp_path, monkeypatch):
-    store = SqliteStore("assistant-project", index_dir=tmp_path)
+    store = SqliteStore("my-project", index_dir=tmp_path)
     doc = Document(
         doc_id="d_ast_1",
         source="docs/confirmation.md",
         title="Confirmation",
         hash="h_ast",
-        collection="assistant-project",
+        collection="my-project",
     )
     chunk = Chunk(
         chunk_id="c_ast_1",

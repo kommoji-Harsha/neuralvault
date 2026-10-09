@@ -160,13 +160,13 @@ def build_parser() -> argparse.ArgumentParser:
     eval_parser.add_argument(
         "--collection",
         type=str,
-        default="assistant-project",
+        default="my-project",
         help="Collection to evaluate.",
     )
     eval_parser.add_argument(
         "--qa-file",
         type=str,
-        default="data/qa/handwritten_assistant_project.jsonl",
+        default="data/qa/handwritten_my_project.jsonl",
         help="QA dataset file path.",
     )
     eval_parser.add_argument(
