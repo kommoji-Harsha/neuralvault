@@ -30,8 +30,8 @@ jobs:
 
       - name: Lint with ruff
         run: |
-          make lint || ruff check .
+          ruff check .
 
       - name: Run tests with pytest
         run: |
-          make test || pytest
+          pytest

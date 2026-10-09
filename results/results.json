@@ -1,0 +1,51 @@
+{
+  "collection": "my-project",
+  "timestamp": "2026-10-09T06:05:14Z",
+  "strategies": [
+    {
+      "strategy": "bm25",
+      "recall_at_5": 0.8,
+      "mrr": 0.5416666666666666,
+      "ndcg_at_5": 1.1049759529180654,
+      "latency_p50_ms": 14.779349500713579,
+      "latency_p95_ms": 23.27995235018533,
+      "sample_count": 10
+    },
+    {
+      "strategy": "vector",
+      "recall_at_5": 0.8,
+      "mrr": 0.5416666666666666,
+      "ndcg_at_5": 1.1049759529180654,
+      "latency_p50_ms": 15.389367498755746,
+      "latency_p95_ms": 17.184922300384642,
+      "sample_count": 10
+    },
+    {
+      "strategy": "hybrid",
+      "recall_at_5": 0.8,
+      "mrr": 0.5416666666666666,
+      "ndcg_at_5": 1.1049759529180654,
+      "latency_p50_ms": 15.09112050098338,
+      "latency_p95_ms": 17.220100149643258,
+      "sample_count": 10
+    },
+    {
+      "strategy": "hybrid+rerank",
+      "recall_at_5": 0.8,
+      "mrr": 0.5166666666666666,
+      "ndcg_at_5": 1.0587646826539674,
+      "latency_p50_ms": 87.55226050107012,
+      "latency_p95_ms": 118.43064264967322,
+      "sample_count": 10
+    },
+    {
+      "strategy": "full",
+      "recall_at_5": 0.8,
+      "mrr": 0.5166666666666666,
+      "ndcg_at_5": 1.0587646826539674,
+      "latency_p50_ms": 88.78436750092078,
+      "latency_p95_ms": 118.42222554987526,
+      "sample_count": 10
+    }
+  ]
+}
