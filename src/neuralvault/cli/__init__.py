@@ -1,6 +1,7 @@
 """NeuralVault Command Line Interface (CLI)."""
 
 import argparse
+import json
 import os
 import sqlite3
 import sys
@@ -15,6 +16,70 @@ from neuralvault.config import (
 from neuralvault.contract import AskRequest, SearchRequest
 from neuralvault.ingest.engine import IngestEngine
 from neuralvault.service.service import RagService
+
+TOOL_DOCSTRING = (
+    "Search your personal knowledge base — documents, notes, code, "
+    "and project files you have indexed.\n\n"
+    "Use this for: questions about your own files, code, projects, "
+    "documents, or anything you have explicitly added to the knowledge base.\n\n"
+    "Do NOT use this for: personal facts about the user (use search_memory), "
+    "live internet information (use search_web), or general knowledge questions "
+    "the model can answer directly.\n\n"
+    "Returns a list of relevant passages with source, location, and a relevance score. "
+    "If nothing relevant is found, returns an explicit note saying so — do not invent an answer."
+)
+
+
+def export_tool_schema(fmt: str = "json-schema") -> str:
+    """Export search_knowledge_base tool schema for LLM providers."""
+    param_schema = {
+        "type": "object",
+        "properties": {
+            "query": {"type": "string", "description": "Search query text."},
+            "top_k": {
+                "type": "integer",
+                "default": 3,
+                "description": "Number of relevant passages to retrieve.",
+            },
+        },
+        "required": ["query"],
+    }
+
+    if fmt == "openai":
+        schema = {
+            "type": "function",
+            "function": {
+                "name": "search_knowledge_base",
+                "description": TOOL_DOCSTRING,
+                "parameters": param_schema,
+            },
+        }
+    elif fmt == "anthropic":
+        schema = {
+            "name": "search_knowledge_base",
+            "description": TOOL_DOCSTRING,
+            "input_schema": param_schema,
+        }
+    elif fmt == "gemini":
+        schema = {
+            "function_declarations": [
+                {
+                    "name": "search_knowledge_base",
+                    "description": TOOL_DOCSTRING,
+                    "parameters": param_schema,
+                }
+            ]
+        }
+    else:  # json-schema
+        schema = {
+            "title": "search_knowledge_base",
+            "description": TOOL_DOCSTRING,
+            "type": "object",
+            "properties": param_schema["properties"],
+            "required": param_schema["required"],
+        }
+
+    return json.dumps(schema, indent=2)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -85,6 +150,21 @@ def build_parser() -> argparse.ArgumentParser:
     subparsers.add_parser(
         "collections",
         help="List available document collections.",
+    )
+
+    # Tools subparser
+    tools_parser = subparsers.add_parser(
+        "tools",
+        help="Manage and export tool schemas for assistant planners.",
+    )
+    tools_sub = tools_parser.add_subparsers(dest="tools_command", help="Tools subcommands")
+    export_parser = tools_sub.add_parser("export", help="Export search_knowledge_base schema.")
+    export_parser.add_argument(
+        "--format",
+        type=str,
+        default="json-schema",
+        choices=["openai", "anthropic", "gemini", "json-schema"],
+        help="Schema export format.",
     )
 
     # MCP command
@@ -291,6 +371,12 @@ def main() -> None:
                 f"- {c.name}: {c.description or 'No description'} "
                 f"({c.document_count} docs, {c.chunk_count} chunks, model: {c.embedding_model})"
             )
+
+    elif args.command == "tools":
+        if args.tools_command == "export":
+            print(export_tool_schema(fmt=args.format))
+        else:
+            parser.print_help()
 
     elif args.command == "mcp":
         from neuralvault.mcp_server.server import run_http_server, run_stdio_server

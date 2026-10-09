@@ -1,7 +1,7 @@
 """Incremental ingestion engine and JSONL store for NeuralVault.
 
 Handles SHA-256 hash comparison for incremental ingestion,
-deleted file chunk removal, and JSONL persistence under indexes/<collection>/.
+deleted file chunk removal, and JSONL/SQLite persistence under indexes/<collection>/.
 """
 
 import json
@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Set, Tuple
 
 from neuralvault.chunk.chunkers import get_chunker_for_document
-from neuralvault.config import get_indexes_dir
+from neuralvault.config import get_indexes_dir, is_offline
 from neuralvault.contract import Chunk, Document
 from neuralvault.ingest.loaders import LOADER_MAPPING, compute_sha256, load_file
 
@@ -168,6 +168,7 @@ class IngestEngine:
 
         # Process new and changed files
         processed_count = 0
+        newly_processed_sources: Set[str] = set()
         for f in to_process:
             src_str = str(f.resolve())
             doc, text = load_file(f, collection=self.collection)
@@ -180,10 +181,44 @@ class IngestEngine:
 
             new_docs[src_str] = doc
             new_chunks.extend(file_chunks)
+            newly_processed_sources.add(src_str)
             processed_count += 1
 
         # Save state to JSONL store
         self.store.save_all(new_docs, new_chunks)
+
+        # Sync to SqliteStore with embeddings
+        try:
+            from neuralvault.embed.providers import get_embedding_provider
+            from neuralvault.store.sqlite_store import SqliteStore
+
+            sqlite_store = SqliteStore(
+                self.collection, index_dir=self.store.collection_dir.parent
+            )
+            meta = sqlite_store.get_collection_metadata()
+            embed_provider_type = "hash" if is_offline() else "fastembed"
+            embedder = get_embedding_provider(
+                embed_provider_type,
+                model_name=meta.embedding_model,
+                dimension=meta.embedding_dim,
+            )
+
+            for src in deleted_sources:
+                sqlite_store.delete_document(src)
+
+            if newly_processed_sources:
+                docs_to_sync = [new_docs[s] for s in newly_processed_sources if s in new_docs]
+                chunks_to_sync = [
+                    c for c in new_chunks if c.source in newly_processed_sources
+                ]
+                if chunks_to_sync:
+                    chunk_texts = [c.embedding_text or c.text for c in chunks_to_sync]
+                    vecs = embedder.embed(chunk_texts)
+                    sqlite_store.add_documents_and_chunks(
+                        docs_to_sync, chunks_to_sync, vecs
+                    )
+        except Exception:
+            pass
 
         return {
             "collection": self.collection,
