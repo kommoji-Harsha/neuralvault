@@ -34,13 +34,13 @@ Executes search retrieval and synthesizes an answer using cited chunk IDs. Retur
 neuralvault collections
 
 # Search a collection
-neuralvault search assistant-project "confirmation workflow" --profile balanced --top-k 3
+neuralvault search my-project "confirmation workflow" --profile balanced --top-k 3
 
 # Ask a question over a collection
-neuralvault ask assistant-project "How does tool confirmation work?" --profile balanced
+neuralvault ask my-project "How does tool confirmation work?" --profile balanced
 
 # Ingest a directory or file
-neuralvault ingest assistant-project --path README.md
+neuralvault ingest my-project --path README.md
 
 # Run system diagnostic report
 neuralvault doctor

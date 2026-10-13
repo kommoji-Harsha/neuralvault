@@ -42,5 +42,5 @@ Must pass $\ge 95\%$ accuracy threshold.
 ## CLI Execution
 ```bash
 # Run evaluation harness
-neuralvault eval --collection assistant-project --qa-file data/qa/handwritten_assistant_project.jsonl
+neuralvault eval --collection my-project --qa-file data/qa/handwritten_assistant_project.jsonl
 ```

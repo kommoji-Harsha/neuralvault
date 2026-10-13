@@ -26,7 +26,7 @@ Set `NEURALVAULT_API_KEY=secret_key` in environment to enforce authentication vi
 from neuralvault import RagClient
 
 # In-process local mode (no server required)
-client = RagClient(mode="local", collection="assistant-project")
+client = RagClient(mode="local", collection="my-project")
 results = client.search("confirmation workflow")
 
 # HTTP mode

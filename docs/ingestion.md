@@ -48,9 +48,9 @@ Ingested documents and chunks are stored in `indexes/<collection>/store.jsonl` (
 
 ### Command Line Interface
 ```bash
-# Ingest current directory into assistant-project collection
-neuralvault ingest assistant-project
+# Ingest current directory into my-project collection
+neuralvault ingest my-project
 
 # Ingest specific file or directory
-neuralvault ingest assistant-project --path README.md
+neuralvault ingest my-project --path README.md
 ```
